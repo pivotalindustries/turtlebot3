@@ -1,13 +1,31 @@
 <launch>
-  <arg name="multi_robot_name" default=""/>
-  <arg name="set_lidar_frame_id" default="base_scan"/>
+   <arg name="multi_robot_name" default=""/>
+   <arg name="set_lidar_frame_id" default="laser_frame"/>
 
-  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_core.launch">
-    <arg name="multi_robot_name" value="$(arg multi_robot_name)"/>
-  </include>
-  <include file="$(find turtlebot3_bringup)/launch/turtlebot3_lidar.launch">
-    <arg name="set_frame_id" value="$(arg set_lidar_frame_id)"/>
-  </include>
+   <node pkg="tf2_ros" type="static_transform_publisher" name="bf_to_d455_camera_broadcaster" args="0.065 0.04 0 0 0 0 1 base_footprint camera_link" />
+   <node pkg="tf2_ros" type="static_transform_publisher" name="laser_to_bf_broadcaster" args="0.0 0.0 0 0 0 0 1 base_footprint laser_frame" />
+
+   <include file="$(find turtlebot3_bringup)/launch/turtlebot3_core.launch">
+      <arg name="multi_robot_name" value="$(arg multi_robot_name)"/>
+   </include>
+
+   <include file="$(find apriltag_localization)/launch/apriltag_detection.launch">
+   </include>
+
+   <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+   </include>
+
+   <include file="$(find apriltag_localization)/launch/localize.launch">
+   </include>
+
+   <include file="$(find mock_laserscan)/launch/mock_laserscan.launch">
+   </include>
+
+   <include file="$(find map_to_odom_relay)/launch/map_to_odom_relay.launch">
+   </include>
+
+   <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
+   </include>
 
   <node pkg="turtlebot3_bringup" type="turtlebot3_diagnostics" name="turtlebot3_diagnostics" output="screen"/>
 </launch>
